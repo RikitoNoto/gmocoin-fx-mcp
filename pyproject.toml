@@ -6,4 +6,10 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastmcp>=3.2.4",
+    "gmo-fx>=0.0.5",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
 ]

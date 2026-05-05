@@ -1,6 +1,10 @@
 from fastmcp import FastMCP
 
-mcp = FastMCP("GMO Coin MCP Server")
+from tools.kline import register_kline_tools
+
+mcp = FastMCP("GMO Coin FX MCP Server")
+
+register_kline_tools(mcp)
 
 if __name__ == "__main__":
-    mcp.run(transport="sse", host="0.0.0.0", port=8000)
+    mcp.run()
