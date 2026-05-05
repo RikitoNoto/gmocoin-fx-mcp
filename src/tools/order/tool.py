@@ -1,10 +1,13 @@
 from typing import Optional
 
 from fastmcp import FastMCP
+from fastmcp.exceptions import ToolError
 from gmo_fx.api.order import OrderApi
 
 
-def register_order_tools(mcp: FastMCP, api_key: str, secret_key: str) -> None:
+def register_order_tools(
+    mcp: FastMCP, api_key: str, secret_key: str, size_limit: int | None = None
+) -> None:
     @mcp.tool()
     def order_api(
         symbol: OrderApi.Symbol,
@@ -19,6 +22,9 @@ def register_order_tools(mcp: FastMCP, api_key: str, secret_key: str) -> None:
     ) -> list[dict[str, str | int | float | None]]:
         """GMO Coin FXの新規注文を実行します。"""
         api = OrderApi(api_key=api_key, secret_key=secret_key)
+
+        if size_limit is not None and size > size_limit:
+            raise ToolError(f"size must be less than or equal to {size_limit}")
 
         response = api(
             symbol=symbol,

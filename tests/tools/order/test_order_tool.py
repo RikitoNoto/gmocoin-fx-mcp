@@ -28,110 +28,200 @@ class FakeOrder:
     timestamp: datetime
 
 
-def create_test_server():
+def construct_mcp(size_limit: int | None = None):
     mcp = FastMCP("test")
-    register_order_tools(mcp, api_key="test-key", secret_key="test-secret")
+    register_order_tools(
+        mcp, api_key="test-key", secret_key="test-secret", size_limit=size_limit
+    )
     return mcp
 
 
-@pytest.mark.anyio
-async def test_registers_order_api_tool_without_credentials_in_schema():
-    mcp = create_test_server()
-    tool = await mcp.get_tool("order_api")
-
-    assert tool is not None
-    assert tool.name == "order_api"
-    assert set(tool.parameters["required"]) == {
-        "symbol",
-        "side",
-        "size",
-        "execution_type",
-    }
-    assert "api_key" not in tool.parameters["properties"]
-    assert "secret_key" not in tool.parameters["properties"]
+@pytest.fixture
+def mcp():
+    return construct_mcp()
 
 
-@pytest.mark.anyio
-async def test_order_api_uses_registered_credentials_and_maps_response(monkeypatch):
-    init_calls = []
-    api_calls = []
+class FakeOrderApi:
+    return_orders: list[FakeOrder] = []
+    init_calls: list[dict] = []
+    api_calls: list[dict] = []
+    Symbol = OrderApi.Symbol
+    Side = OrderApi.Side
+    ExecutionType = OrderApi.ExecutionType
 
-    class FakeOrderApi:
-        Symbol = OrderApi.Symbol
-        Side = OrderApi.Side
-        ExecutionType = OrderApi.ExecutionType
+    def __init__(self, *, api_key, secret_key):
+        self.init_calls.append({"api_key": api_key, "secret_key": secret_key})
 
-        def __init__(self, *, api_key, secret_key):
-            init_calls.append({"api_key": api_key, "secret_key": secret_key})
+    def __call__(self, **kwargs):
+        self.api_calls.append(kwargs)
+        return SimpleNamespace(orders=self.return_orders)
 
-        def __call__(self, **kwargs):
-            api_calls.append(kwargs)
-            return SimpleNamespace(
-                orders=[
-                    FakeOrder(
-                        root_order_id="r1",
-                        client_order_id="c1",
-                        order_id="o1",
-                        symbol=OrderApi.Symbol.USD_JPY,
-                        side=OrderApi.Side.BUY,
-                        order_type=SimpleNamespace(value="NORMAL"),
-                        execution_type=OrderApi.ExecutionType.LIMIT,
-                        settle_type=SimpleNamespace(value="OPEN"),
-                        size=1,
-                        price=150.25,
-                        status=SimpleNamespace(value="ORDERED"),
-                        cancel_type=None,
-                        expiry=date(2026, 5, 31),
-                        timestamp=datetime(2026, 5, 5, 10, 30, tzinfo=timezone.utc),
-                    )
-                ]
+
+def construct_fake_order_api(orders: list[FakeOrder] | None = None):
+    if orders is None:
+        orders = [
+            FakeOrder(
+                root_order_id="r1",
+                client_order_id="c1",
+                order_id="o1",
+                symbol=OrderApi.Symbol.USD_JPY,
+                side=OrderApi.Side.BUY,
+                order_type=SimpleNamespace(value="NORMAL"),
+                execution_type=OrderApi.ExecutionType.LIMIT,
+                settle_type=SimpleNamespace(value="OPEN"),
+                size=1,
+                price=150.25,
+                status=SimpleNamespace(value="ORDERED"),
+                cancel_type=None,
+                expiry=date(2026, 5, 31),
+                timestamp=datetime(2026, 5, 5, 10, 30, tzinfo=timezone.utc),
+            )
+        ]
+    FakeOrderApi.return_orders = orders
+    return FakeOrderApi
+
+
+class TestOrderTool:
+
+    @pytest.fixture(autouse=True)
+    def set_up_tear_down(self):
+        self.set_up()
+        yield
+        self.tear_down()
+
+    def set_up(self):
+        pass
+
+    def tear_down(self):
+        FakeOrderApi.init_calls = []
+        FakeOrderApi.api_calls = []
+        FakeOrderApi.return_orders = []
+
+    @pytest.mark.anyio
+    async def test_registers_order_api_tool_without_credentials_in_schema(
+        self, mcp: FastMCP
+    ):
+        tool = await mcp.get_tool("order_api")
+
+        assert tool is not None
+        assert tool.name == "order_api"
+        assert set(tool.parameters["required"]) == {
+            "symbol",
+            "side",
+            "size",
+            "execution_type",
+        }
+        assert "api_key" not in tool.parameters["properties"]
+        assert "secret_key" not in tool.parameters["properties"]
+
+    @pytest.mark.anyio
+    async def test_order_api_uses_registered_credentials_and_maps_response(
+        self, monkeypatch: pytest.MonkeyPatch, mcp: FastMCP
+    ):
+        construct_fake_order_api()
+        monkeypatch.setattr(order_tool, "OrderApi", FakeOrderApi)
+
+        async with Client(mcp) as client:
+            result = await client.call_tool(
+                "order_api",
+                {
+                    "symbol": "USD_JPY",
+                    "side": "BUY",
+                    "size": 1,
+                    "execution_type": "LIMIT",
+                    "client_order_id": "c1",
+                    "limit_price": 150.25,
+                },
             )
 
-    monkeypatch.setattr(order_tool, "OrderApi", FakeOrderApi)
-    mcp = create_test_server()
-
-    async with Client(mcp) as client:
-        result = await client.call_tool(
-            "order_api",
+        assert FakeOrderApi.init_calls == [
+            {"api_key": "test-key", "secret_key": "test-secret"}
+        ]
+        assert FakeOrderApi.api_calls == [
             {
-                "symbol": "USD_JPY",
-                "side": "BUY",
+                "symbol": OrderApi.Symbol.USD_JPY,
+                "side": OrderApi.Side.BUY,
                 "size": 1,
-                "execution_type": "LIMIT",
+                "execution_type": OrderApi.ExecutionType.LIMIT,
                 "client_order_id": "c1",
                 "limit_price": 150.25,
-            },
-        )
+                "stop_price": None,
+                "lower_bound": None,
+                "upper_bound": None,
+            }
+        ]
+        assert result.data == [
+            {
+                "root_order_id": "r1",
+                "client_order_id": "c1",
+                "order_id": "o1",
+                "symbol": "USD_JPY",
+                "side": "BUY",
+                "order_type": "NORMAL",
+                "execution_type": "LIMIT",
+                "settle_type": "OPEN",
+                "size": 1,
+                "price": 150.25,
+                "status": "ORDERED",
+                "cancel_type": None,
+                "expiry": "2026-05-31",
+                "timestamp": "2026-05-05T10:30:00+00:00",
+            }
+        ]
 
-    assert init_calls == [{"api_key": "test-key", "secret_key": "test-secret"}]
-    assert api_calls == [
-        {
-            "symbol": OrderApi.Symbol.USD_JPY,
-            "side": OrderApi.Side.BUY,
-            "size": 1,
-            "execution_type": OrderApi.ExecutionType.LIMIT,
-            "client_order_id": "c1",
-            "limit_price": 150.25,
-            "stop_price": None,
-            "lower_bound": None,
-            "upper_bound": None,
-        }
-    ]
-    assert result.data == [
-        {
-            "root_order_id": "r1",
-            "client_order_id": "c1",
-            "order_id": "o1",
-            "symbol": "USD_JPY",
-            "side": "BUY",
-            "order_type": "NORMAL",
-            "execution_type": "LIMIT",
-            "settle_type": "OPEN",
-            "size": 1,
-            "price": 150.25,
-            "status": "ORDERED",
-            "cancel_type": None,
-            "expiry": "2026-05-31",
-            "timestamp": "2026-05-05T10:30:00+00:00",
-        }
-    ]
+    @pytest.mark.anyio
+    async def test_should_fail_order_when_size_limit_env(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        mcp_instance = construct_mcp(size_limit=10)
+        monkeypatch.setattr(order_tool, "OrderApi", FakeOrderApi)
+
+        async with Client(mcp_instance) as client:
+            result = await client.call_tool(
+                "order_api",
+                {
+                    "symbol": "USD_JPY",
+                    "side": "BUY",
+                    "size": 11,
+                    "execution_type": "LIMIT",
+                    "client_order_id": "c1",
+                    "limit_price": 150.25,
+                },
+                raise_on_error=False,
+            )
+
+        assert FakeOrderApi.init_calls == [
+            {"api_key": "test-key", "secret_key": "test-secret"}
+        ]
+        assert result.is_error == True
+        assert result.content[0].text == "size must be less than or equal to 10"
+        assert FakeOrderApi.api_calls == []
+
+    @pytest.mark.anyio
+    async def test_should_success_order_when_size_equals_limit_env(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        mcp_instance = construct_mcp(size_limit=10)
+        monkeypatch.setattr(order_tool, "OrderApi", FakeOrderApi)
+
+        async with Client(mcp_instance) as client:
+            result = await client.call_tool(
+                "order_api",
+                {
+                    "symbol": "USD_JPY",
+                    "side": "BUY",
+                    "size": 10,
+                    "execution_type": "LIMIT",
+                    "client_order_id": "c1",
+                    "limit_price": 150.25,
+                },
+                raise_on_error=False,
+            )
+
+        assert FakeOrderApi.init_calls == [
+            {"api_key": "test-key", "secret_key": "test-secret"}
+        ]
+        assert result.is_error == False
+        assert FakeOrderApi.api_calls != []

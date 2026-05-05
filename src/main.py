@@ -1,10 +1,12 @@
 import os
 
 from fastmcp import FastMCP
-
+from dotenv import load_dotenv
 from tools.ifdoco_order import register_ifdoco_order_tools
 from tools.kline import register_kline_tools
 from tools.order import register_order_tools
+
+load_dotenv()
 
 mcp = FastMCP("GMO Coin FX MCP Server")
 
