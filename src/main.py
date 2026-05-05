@@ -15,6 +15,7 @@ register_order_tools(
     mcp,
     api_key=os.environ["GMO_API_KEY"],
     secret_key=os.environ["GMO_SECRET_KEY"],
+    size_limit=os.environ.get("ORDER_SIZE_LIMIT", None),
 )
 register_ifdoco_order_tools(
     mcp,
