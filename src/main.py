@@ -2,7 +2,7 @@ from fastmcp import FastMCP
 
 from tools.kline import register_kline_tools
 
-mcp = FastMCP("GMO Coin MCP Server")
+mcp = FastMCP("GMO Coin FX MCP Server")
 
 register_kline_tools(mcp)
 
