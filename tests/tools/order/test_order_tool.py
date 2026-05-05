@@ -28,10 +28,17 @@ class FakeOrder:
     timestamp: datetime
 
 
-def construct_mcp(size_limit: int | None = None):
+def construct_mcp(
+    size_limit: int | None = None,
+    symbol_limits: set[OrderApi.Symbol] | None = None,
+):
     mcp = FastMCP("test")
     register_order_tools(
-        mcp, api_key="test-key", secret_key="test-secret", size_limit=size_limit
+        mcp,
+        api_key="test-key",
+        secret_key="test-secret",
+        size_limit=size_limit,
+        symbol_limits=symbol_limits,
     )
     return mcp
 
@@ -225,3 +232,27 @@ class TestOrderTool:
         ]
         assert result.is_error == False
         assert FakeOrderApi.api_calls != []
+
+    @pytest.mark.anyio
+    async def test_should_fail_order_when_symbol_not_in_limits(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        mcp_instance = construct_mcp(symbol_limits={OrderApi.Symbol.USD_JPY})
+        monkeypatch.setattr(order_tool, "OrderApi", FakeOrderApi)
+
+        async with Client(mcp_instance) as client:
+            result = await client.call_tool(
+                "order_api",
+                {
+                    "symbol": "EUR_JPY",
+                    "side": "BUY",
+                    "size": 1,
+                    "execution_type": "LIMIT",
+                },
+                raise_on_error=False,
+            )
+
+        assert result.is_error == True
+        assert result.content[0].text == "symbol must be one of: USD_JPY"
+        assert FakeOrderApi.api_calls == []

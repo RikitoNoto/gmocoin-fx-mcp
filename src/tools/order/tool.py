@@ -6,7 +6,11 @@ from gmo_fx.api.order import OrderApi
 
 
 def register_order_tools(
-    mcp: FastMCP, api_key: str, secret_key: str, size_limit: int | None = None
+    mcp: FastMCP,
+    api_key: str,
+    secret_key: str,
+    size_limit: int | None = None,
+    symbol_limits: set[OrderApi.Symbol] | None = None,
 ) -> None:
     @mcp.tool()
     def order_api(
@@ -22,6 +26,10 @@ def register_order_tools(
     ) -> list[dict[str, str | int | float | None]]:
         """GMO Coin FXの新規注文を実行します。"""
         api = OrderApi(api_key=api_key, secret_key=secret_key)
+
+        if symbol_limits is not None and symbol not in symbol_limits:
+            allow_symbols = ", ".join(sorted(s.value for s in symbol_limits))
+            raise ToolError(f"symbol must be one of: {allow_symbols}")
 
         if size_limit is not None and size > size_limit:
             raise ToolError(f"size must be less than or equal to {size_limit}")
