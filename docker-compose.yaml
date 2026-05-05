@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  server:
+  gmo-coin-mcp-server:
     build:
       context: .
       dockerfile: Dockerfile
