@@ -8,22 +8,9 @@ from gmo_fx.api.klines import KlinesApi
 def register_kline_tools(mcp: FastMCP) -> None:
     @mcp.tool()
     def kline_api(
-        symbol: str,
+        symbol: KlinesApi.Symbol,
         price_type: Literal["BID", "ASK"],
-        interval: Literal[
-            "1min",
-            "5min",
-            "10min",
-            "15min",
-            "30min",
-            "1hour",
-            "4hour",
-            "8hour",
-            "12hour",
-            "1day",
-            "1week",
-            "1month",
-        ],
+        interval: KlinesApi.KlineInterval,
         date: str,
     ) -> list[dict[str, str | float]]:
         """GMO CoinのKline(ローソク足)を取得します。dateはYYYY-MM-DD形式で指定してください。"""
@@ -31,9 +18,9 @@ def register_kline_tools(mcp: FastMCP) -> None:
         parsed_date = datetime.strptime(date, "%Y-%m-%d")
 
         response = api(
-            symbol=KlinesApi.Symbol(symbol),
+            symbol=symbol,
             price_type=price_type,
-            interval=KlinesApi.KlineInterval(interval),
+            interval=interval,
             date=parsed_date,
         )
 
