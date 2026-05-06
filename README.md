@@ -18,3 +18,10 @@
 | `order_api` | Places a new GMO Coin FX order. |
 | `active_orders_api` | Retrieves active GMO Coin FX orders. Supports optional `symbol`, `prev_id`, and `count` parameters. When `ORDER_CLIENT_ORDER_ID_PREFIX` is configured, only active orders whose `client_order_id` starts with that prefix are returned. |
 | `latest_executions_api` | Retrieves the latest GMO Coin FX executions for a required `symbol` and optional `count`. When `ORDER_CLIENT_ORDER_ID_PREFIX` is configured, only executions whose `client_order_id` starts with that prefix are returned. |
+
+
+## Resources
+
+| URI | Description |
+| --- | --- |
+| `gmocoin-fx://account/assets` | Retrieves GMO Coin FX account asset balances as JSON. Asset balances are exposed as an MCP resource because they are read-only account state with a stable URI and no invocation parameters. |
