@@ -31,6 +31,7 @@ class FakeOrder:
 def construct_mcp(
     size_limit: int | None = None,
     symbol_limits: set[OrderApi.Symbol] | None = None,
+    client_order_id_prefix: str | None = None,
 ):
     mcp = FastMCP("test")
     register_order_tools(
@@ -39,6 +40,7 @@ def construct_mcp(
         secret_key="test-secret",
         size_limit=size_limit,
         symbol_limits=symbol_limits,
+        client_order_id_prefix=client_order_id_prefix,
     )
     return mcp
 
@@ -175,6 +177,89 @@ class TestOrderTool:
                 "timestamp": "2026-05-05T10:30:00+00:00",
             }
         ]
+
+    @pytest.mark.anyio
+    async def test_order_api_generates_client_order_id_with_configured_prefix(
+        self, monkeypatch: pytest.MonkeyPatch
+    ):
+        class FixedDateTime:
+            @classmethod
+            def now(cls, tz):
+                return datetime(2026, 5, 6, 1, 2, 3, tzinfo=tz)
+
+        construct_fake_order_api()
+        monkeypatch.setattr(order_tool, "OrderApi", FakeOrderApi)
+        monkeypatch.setattr(order_tool, "datetime", FixedDateTime)
+        mcp_instance = construct_mcp(client_order_id_prefix="GMOFX")
+
+        async with Client(mcp_instance) as client:
+            await client.call_tool(
+                "order_api",
+                {
+                    "symbol": "USD_JPY",
+                    "side": "BUY",
+                    "size": 1,
+                    "execution_type": "LIMIT",
+                    "limit_price": 150.25,
+                },
+            )
+
+        assert FakeOrderApi.api_calls[0]["client_order_id"] == "GMOFX20260506010203"
+
+    @pytest.mark.anyio
+    async def test_order_api_accepts_22_character_client_order_id_prefix(
+        self, monkeypatch: pytest.MonkeyPatch
+    ):
+        class FixedDateTime:
+            @classmethod
+            def now(cls, tz):
+                return datetime(2026, 5, 6, 1, 2, 3, tzinfo=tz)
+
+        construct_fake_order_api()
+        monkeypatch.setattr(order_tool, "OrderApi", FakeOrderApi)
+        monkeypatch.setattr(order_tool, "datetime", FixedDateTime)
+        mcp_instance = construct_mcp(client_order_id_prefix="A" * 22)
+
+        async with Client(mcp_instance) as client:
+            await client.call_tool(
+                "order_api",
+                {
+                    "symbol": "USD_JPY",
+                    "side": "BUY",
+                    "size": 1,
+                    "execution_type": "LIMIT",
+                    "limit_price": 150.25,
+                },
+            )
+
+        assert (
+            FakeOrderApi.api_calls[0]["client_order_id"]
+            == "AAAAAAAAAAAAAAAAAAAAAA20260506010203"
+        )
+        assert len(FakeOrderApi.api_calls[0]["client_order_id"]) == 36
+
+    @pytest.mark.parametrize(
+        "prefix, expected_message",
+        [
+            (
+                "A" * 23,
+                "client_order_id_prefix must be less than or equal to 22 characters",
+            ),
+            (
+                "ABC_123",
+                "client_order_id_prefix must contain only ASCII letters and numbers",
+            ),
+            (
+                "発注",
+                "client_order_id_prefix must contain only ASCII letters and numbers",
+            ),
+        ],
+    )
+    def test_register_order_api_rejects_invalid_client_order_id_prefix(
+        self, prefix: str, expected_message: str
+    ):
+        with pytest.raises(ValueError, match=expected_message):
+            construct_mcp(client_order_id_prefix=prefix)
 
     @pytest.mark.anyio
     async def test_should_fail_order_when_size_limit_env(
