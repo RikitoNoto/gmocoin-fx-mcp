@@ -3,7 +3,7 @@ from typing import Optional
 from fastmcp import FastMCP
 from fastmcp.exceptions import ToolError
 from gmo_fx.api.close_order import CloseOrderApi
-from tools.client_order_id import ClientOrderIdGenerator
+from utils.client_order_id import ClientOrderIdGenerator
 
 
 def _map_close_order(order) -> dict[str, str | int | float | None]:

@@ -3,7 +3,7 @@ from typing import Optional
 from fastmcp import FastMCP
 from fastmcp.exceptions import ToolError
 from gmo_fx.api.order import OrderApi
-from tools.client_order_id import ClientOrderIdGenerator
+from utils.client_order_id import ClientOrderIdGenerator
 
 
 def register_order_tools(

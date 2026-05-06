@@ -7,8 +7,8 @@ from fastmcp import Client, FastMCP
 from gmo_fx.api.order import OrderApi
 
 from tools.order import register_order_tools
-import tools.client_order_id as client_order_id_tool
 import tools.order.tool as order_tool
+import utils.client_order_id as client_order_id_tool
 
 
 @dataclass
