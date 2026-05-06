@@ -30,6 +30,7 @@ register_order_tools(
         if os.environ.get("ORDER_SYMBOL_LIMITS")
         else None
     ),
+    client_order_id_prefix=os.environ.get("ORDER_CLIENT_ORDER_ID_PREFIX") or None,
 )
 register_ifdoco_order_tools(
     mcp,
