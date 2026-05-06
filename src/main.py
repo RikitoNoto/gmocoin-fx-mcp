@@ -96,11 +96,11 @@ def get_run_config() -> RunConfig:
     return run_config
 
 
-def run_server(server: FastMCP | None = None) -> None:
-    (server or mcp).run(**get_run_config())
+def run_server(server: FastMCP) -> None:
+    server.run(**get_run_config())
 
 
 mcp = create_mcp()
 
 if __name__ == "__main__":
-    run_server()
+    run_server(mcp)
