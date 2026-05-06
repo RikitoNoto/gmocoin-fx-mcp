@@ -2,13 +2,13 @@ from typing import Optional
 
 from fastmcp import FastMCP
 from gmo_fx.api.latest_executions import LatestExecutionsApi
-from gmo_fx.api.open_positions import OpenPositionsApi
+from gmo_fx.api.open_positions import OpenPosition, OpenPositionsApi
 
 OPEN_POSITIONS_PAGE_SIZE = 100
 LATEST_EXECUTIONS_COUNT = 100
 
 
-def _map_open_position(position) -> dict[str, str | int | float]:
+def _map_open_position(position: OpenPosition) -> dict[str, str | int | float]:
     return {
         "position_id": position.position_id,
         "symbol": position.symbol.value,
@@ -25,8 +25,8 @@ def _map_open_position(position) -> dict[str, str | int | float]:
 def _fetch_all_open_positions(
     api: OpenPositionsApi,
     symbol: OpenPositionsApi.Symbol | None,
-) -> list:
-    open_positions = []
+) -> list[OpenPosition]:
+    open_positions: list[OpenPosition] = []
     prev_id = None
 
     while True:
@@ -48,10 +48,10 @@ def _fetch_all_open_positions(
 
 
 def _filter_positions_by_client_order_id_prefix(
-    positions: list,
+    positions: list[OpenPosition],
     api: LatestExecutionsApi,
     client_order_id_prefix: str,
-) -> list:
+) -> list[OpenPosition]:
     position_symbols = sorted(
         {position.symbol for position in positions},
         key=lambda symbol: symbol.value,
