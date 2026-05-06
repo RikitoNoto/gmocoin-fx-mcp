@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from tools.active_orders import register_active_orders_tools
 from tools.ifdoco_order import register_ifdoco_order_tools
 from tools.kline import register_kline_tools
+from tools.latest_executions import register_latest_executions_tools
 from tools.order import register_order_tools
 from gmo_fx.api.order import OrderApi
 
@@ -34,6 +35,12 @@ register_order_tools(
     client_order_id_prefix=os.environ.get("ORDER_CLIENT_ORDER_ID_PREFIX") or None,
 )
 register_active_orders_tools(
+    mcp,
+    api_key=os.environ["GMO_API_KEY"],
+    secret_key=os.environ["GMO_SECRET_KEY"],
+    client_order_id_prefix=os.environ.get("ORDER_CLIENT_ORDER_ID_PREFIX") or None,
+)
+register_latest_executions_tools(
     mcp,
     api_key=os.environ["GMO_API_KEY"],
     secret_key=os.environ["GMO_SECRET_KEY"],
