@@ -1,14 +1,10 @@
-version: '3'
-
 services:
   gmo-coin-mcp-server:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      MCP_TRANSPORT: "http"
-      MCP_HTTP_HOST: "0.0.0.0"
-      MCP_HTTP_PORT: "8000"
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     volumes:

@@ -28,7 +28,7 @@ To expose the MCP server over HTTP, set `MCP_TRANSPORT=http` before starting it:
 MCP_TRANSPORT=http MCP_HTTP_HOST=0.0.0.0 MCP_HTTP_PORT=8000 uv run src/main.py
 ```
 
-When running with Docker Compose, the compose file publishes port `8000`; set `MCP_TRANSPORT=http` in your environment or `.env` file to use that port.
+When running with Docker Compose, the compose file loads `.env` but does not force a transport. Leave `MCP_TRANSPORT` unset to use `stdio`, or set `MCP_TRANSPORT=http` in `.env` to use the published port `8000`.
 
 ## Tools
 
