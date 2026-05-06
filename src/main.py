@@ -16,7 +16,11 @@ register_order_tools(
     mcp,
     api_key=os.environ["GMO_API_KEY"],
     secret_key=os.environ["GMO_SECRET_KEY"],
-    size_limit=os.environ.get("ORDER_SIZE_LIMIT", None),
+    size_limit=(
+        int(os.environ["ORDER_SIZE_LIMIT"])
+        if os.environ.get("ORDER_SIZE_LIMIT")
+        else None
+    ),
     symbol_limits=(
         {
             OrderApi.Symbol(symbol.strip())
