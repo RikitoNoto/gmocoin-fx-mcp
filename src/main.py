@@ -2,6 +2,7 @@ import os
 
 from fastmcp import FastMCP
 from dotenv import load_dotenv
+from tools.active_orders import register_active_orders_tools
 from tools.ifdoco_order import register_ifdoco_order_tools
 from tools.kline import register_kline_tools
 from tools.order import register_order_tools
@@ -30,6 +31,12 @@ register_order_tools(
         if os.environ.get("ORDER_SYMBOL_LIMITS")
         else None
     ),
+    client_order_id_prefix=os.environ.get("ORDER_CLIENT_ORDER_ID_PREFIX") or None,
+)
+register_active_orders_tools(
+    mcp,
+    api_key=os.environ["GMO_API_KEY"],
+    secret_key=os.environ["GMO_SECRET_KEY"],
     client_order_id_prefix=os.environ.get("ORDER_CLIENT_ORDER_ID_PREFIX") or None,
 )
 register_ifdoco_order_tools(
