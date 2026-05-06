@@ -5,6 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      MCP_TRANSPORT: "http"
+      MCP_HTTP_HOST: "0.0.0.0"
+      MCP_HTTP_PORT: "8000"
     ports:
       - "8000:8000"
     volumes:
