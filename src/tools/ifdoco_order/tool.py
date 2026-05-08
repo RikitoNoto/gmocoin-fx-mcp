@@ -1,10 +1,13 @@
-from typing import Optional
+from typing import Optional, TypeVar
 
 from fastmcp import FastMCP
 from fastmcp.exceptions import ToolError
 from gmo_fx.api.change_oco_order import ChangeOcoOrderApi
 from gmo_fx.api.ifo_order import IFDOCOOrderApi
 from utils.client_order_id import ClientOrderIdGenerator
+
+
+T = TypeVar("T")
 
 
 def _map_ifdoco_order(order) -> dict[str, str | int | float | None]:
@@ -25,9 +28,10 @@ def _map_ifdoco_order(order) -> dict[str, str | int | float | None]:
     }
 
 
-def _validate_required(value, name: str) -> None:
+def _require_value(value: T | None, name: str) -> T:
     if value is None:
         raise ToolError(f"{name} is required for IFDOCO order")
+    return value
 
 
 def _validate_positive_number(value: int | float, name: str) -> None:
@@ -64,27 +68,16 @@ def register_ifdoco_order_tools(
         """GMO Coin FXのIFDOCO注文を実行します。"""
         api = IFDOCOOrderApi(api_key=api_key, secret_key=secret_key)
 
-        required_values = {
-            "symbol": symbol,
-            "first_side": first_side,
-            "first_execution_type": first_execution_type,
-            "first_size": first_size,
-            "first_price": first_price,
-            "second_size": second_size,
-            "second_limit_price": second_limit_price,
-            "second_stop_price": second_stop_price,
-        }
-        for name, value in required_values.items():
-            _validate_required(value, name)
-
-        assert symbol is not None
-        assert first_side is not None
-        assert first_execution_type is not None
-        assert first_size is not None
-        assert first_price is not None
-        assert second_size is not None
-        assert second_limit_price is not None
-        assert second_stop_price is not None
+        symbol = _require_value(symbol, "symbol")
+        first_side = _require_value(first_side, "first_side")
+        first_execution_type = _require_value(
+            first_execution_type, "first_execution_type"
+        )
+        first_size = _require_value(first_size, "first_size")
+        first_price = _require_value(first_price, "first_price")
+        second_size = _require_value(second_size, "second_size")
+        second_limit_price = _require_value(second_limit_price, "second_limit_price")
+        second_stop_price = _require_value(second_stop_price, "second_stop_price")
 
         if symbol_limits is not None and symbol not in symbol_limits:
             allow_symbols = ", ".join(sorted(s.value for s in symbol_limits))
