@@ -9,6 +9,7 @@ from tools.active_orders import register_active_orders_tools
 from tools.change_order import register_change_order_tools
 from tools.cancel_orders import register_cancel_orders_tools
 from tools.close_order import register_close_order_tools
+from tools.ifd_order import register_ifd_order_tools
 from tools.ifdoco_order import register_ifdoco_order_tools
 from tools.kline import register_kline_tools
 from tools.latest_executions import register_latest_executions_tools
@@ -95,6 +96,14 @@ def create_mcp() -> FastMCP:
         mcp,
         api_key=os.environ["GMO_API_KEY"],
         secret_key=os.environ["GMO_SECRET_KEY"],
+        client_order_id_prefix=os.environ.get("ORDER_CLIENT_ORDER_ID_PREFIX") or None,
+    )
+    register_ifd_order_tools(
+        mcp,
+        api_key=os.environ["GMO_API_KEY"],
+        secret_key=os.environ["GMO_SECRET_KEY"],
+        size_limit=_optional_int_env("ORDER_SIZE_LIMIT"),
+        symbol_limits=_symbol_limits_from_env(),
         client_order_id_prefix=os.environ.get("ORDER_CLIENT_ORDER_ID_PREFIX") or None,
     )
     register_ifdoco_order_tools(
