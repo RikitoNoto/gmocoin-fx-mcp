@@ -91,6 +91,9 @@ def create_mcp() -> FastMCP:
         mcp,
         api_key=os.environ["GMO_API_KEY"],
         secret_key=os.environ["GMO_SECRET_KEY"],
+        size_limit=_optional_int_env("ORDER_SIZE_LIMIT"),
+        symbol_limits=_symbol_limits_from_env(),
+        client_order_id_prefix=os.environ.get("ORDER_CLIENT_ORDER_ID_PREFIX") or None,
     )
     return mcp
 
