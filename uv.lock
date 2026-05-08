@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.12"
 
 [[package]]
@@ -412,14 +412,14 @@ wheels = [
 
 [[package]]
 name = "gmo-fx"
-version = "0.12.1"
+version = "0.14.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7e/20/a435d7ae6cd11e598e8cb0c68c0a788c386e8103ef546e6a73bcd1b26c71/gmo_fx-0.12.1.tar.gz", hash = "sha256:894f119331173d31a12e983357d6c6e01deb57e65014d3341eaede6ca2da9c38", size = 29294, upload-time = "2026-05-06T13:10:47.154Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/20/02/cf8d282cae30b8a214ea005867c369f891d02c50cbdc0c569c7141e799b7/gmo_fx-0.14.0.tar.gz", hash = "sha256:23444e17db173cab830c85208c7ee5fc9cdff91fa945c52b923f995bf7c7a614", size = 34102, upload-time = "2026-05-07T13:12:56.928Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5c/a7/e77fe1c624b1249acf8b13a45ee0285d39e75c2a3db74f1bb0b2fa0bcd5d/gmo_fx-0.12.1-py3-none-any.whl", hash = "sha256:909d11fb79742f73c3ba006baac486ed7a73c57ae125229c583c2fba931e882b", size = 56583, upload-time = "2026-05-06T13:10:45.875Z" },
+    { url = "https://files.pythonhosted.org/packages/fa/57/a7474ea33c0e8dc73dc19c986b02ba2e9e1b2775e2ccb3250ddda37ea9c6/gmo_fx-0.14.0-py3-none-any.whl", hash = "sha256:d015ccff7fe367b8adb30f8ac713f0e8f823876bab93c1c4003415e2476e8ee8", size = 75133, upload-time = "2026-05-07T13:12:55.315Z" },
 ]
 
 [[package]]
@@ -441,7 +441,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastmcp", specifier = ">=3.2.4" },
-    { name = "gmo-fx", specifier = ">=0.12.1" },
+    { name = "gmo-fx", specifier = ">=0.14.0" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
 ]
 
