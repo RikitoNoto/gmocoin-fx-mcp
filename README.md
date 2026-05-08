@@ -38,6 +38,8 @@ When running with Docker Compose, the compose file loads `.env` but does not for
 | `close_order_api` | Places a GMO Coin FX close order. Supports optional `size` or `settle_position` parameters. |
 | `ifdoco_order_api` | Places a GMO Coin FX IFDOCO order using `symbol`, `client_order_id`, `first_side`, `first_execution_type`, `first_size`, `first_price`, `second_size`, `second_limit_price`, and `second_stop_price`. |
 | `change_oco_order_api` | Changes limit/stop prices for an existing GMO Coin FX OCO order. |
+| `change_order_api` | Changes the price of a GMO Coin FX normal order. Specify exactly one of `order_id` or `client_order_id`, plus `price`. |
+| `cancel_orders_api` | Cancels up to 10 GMO Coin FX orders at once. Specify exactly one of `root_order_ids` or `client_order_ids`. |
 | `active_orders_api` | Retrieves active GMO Coin FX orders. Supports optional `symbol`, `prev_id`, and `count` parameters. When `ORDER_CLIENT_ORDER_ID_PREFIX` is configured, only active orders whose `client_order_id` starts with that prefix are returned. |
 | `latest_executions_api` | Retrieves the latest GMO Coin FX executions for a required `symbol` and optional `count`. When `ORDER_CLIENT_ORDER_ID_PREFIX` is configured, only executions whose `client_order_id` starts with that prefix are returned. |
 | `open_positions_api` | Retrieves all GMO Coin FX open positions. Supports an optional `symbol` parameter. When `ORDER_CLIENT_ORDER_ID_PREFIX` is configured, latest executions are used to return only positions whose opening `client_order_id` starts with that prefix. |
