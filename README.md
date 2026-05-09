@@ -39,6 +39,7 @@ When running with Docker Compose, the compose file loads `.env` but does not for
 | `ifd_order_api` | Places a GMO Coin FX IFD order using `symbol`, `client_order_id`, `first_side`, `first_execution_type`, `first_size`, `first_price`, `second_execution_type`, `second_size`, and `second_price`. |
 | `ifdoco_order_api` | Places a GMO Coin FX IFDOCO order using `symbol`, `client_order_id`, `first_side`, `first_execution_type`, `first_size`, `first_price`, `second_size`, `second_limit_price`, and `second_stop_price`. |
 | `change_ifdoco_order_api` | Changes prices for an existing GMO Coin FX IFDOCO order. Specify exactly one of `root_order_id` or `client_order_id`, plus at least one of `first_price`, `second_limit_price`, or `second_stop_price`. |
+| `change_ifd_order_api` | Changes prices for an existing GMO Coin FX IFD order. Specify exactly one of `root_order_id` or `client_order_id`, plus at least one of `first_price` or `second_price`. |
 | `change_oco_order_api` | Changes limit/stop prices for an existing GMO Coin FX OCO order. |
 | `change_order_api` | Changes the price of a GMO Coin FX normal order. Specify exactly one of `order_id` or `client_order_id`, plus `price`. |
 | `cancel_orders_api` | Cancels up to 10 GMO Coin FX orders at once. Specify exactly one of `root_order_ids` or `client_order_ids`. |
