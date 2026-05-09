@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.12"
 
 [[package]]
@@ -423,8 +423,8 @@ wheels = [
 ]
 
 [[package]]
-name = "gmocoin-mcp"
-version = "0.1.0"
+name = "gmocoin-fx-mcp"
+version = "1.0.0"
 source = { virtual = "." }
 dependencies = [
     { name = "fastmcp" },
