@@ -7,7 +7,7 @@
 | `GMO_API_KEY` | Yes | GMO Coin FX API key. |
 | `GMO_SECRET_KEY` | Yes | GMO Coin FX secret key. |
 | `ORDER_SIZE_LIMIT` | No | Maximum order size accepted by the `order_api`, `close_order_api`, `ifd_order_api`, and `ifdoco_order_api` tools. |
-| `ORDER_SYMBOL_LIMITS` | No | Comma-separated list of symbols accepted by the `order_api`, `close_order_api`, `ifd_order_api`, and `ifdoco_order_api` tools. |
+| `ORDER_SYMBOL_LIMITS` | No | Comma-separated list of symbols accepted by the `order_api`, `close_order_api`, `ifd_order_api`, `ifdoco_order_api`, and `cancel_bulk_order_api` tools. |
 | `ORDER_CLIENT_ORDER_ID_PREFIX` | No | ASCII alphanumeric prefix used to auto-generate `client_order_id` for `order_api`, `close_order_api`, `ifd_order_api`, and `ifdoco_order_api` calls and to filter `active_orders_api`, `latest_executions_api`, and `open_positions_api` results. Must be 22 characters or fewer. The server appends a 14-digit timestamp suffix (`yyyyMMddHHmmss`) so the resulting ID stays within GMO Coin FX's 36-character limit. |
 | `MCP_TRANSPORT` | No | MCP transport to use. Defaults to `stdio`; set to `http` to listen over HTTP. `sse` and `streamable-http` are also accepted. |
 | `MCP_HTTP_HOST` | No | Host/interface for HTTP transports. Defaults to `0.0.0.0`. |
@@ -43,6 +43,7 @@ When running with Docker Compose, the compose file loads `.env` but does not for
 | `change_oco_order_api` | Changes limit/stop prices for an existing GMO Coin FX OCO order. |
 | `change_order_api` | Changes the price of a GMO Coin FX normal order. Specify exactly one of `order_id` or `client_order_id`, plus `price`. |
 | `cancel_orders_api` | Cancels up to 10 GMO Coin FX orders at once. Specify exactly one of `root_order_ids` or `client_order_ids`. |
+| `cancel_bulk_order_api` | Cancels GMO Coin FX orders in bulk by required `symbols` and optional `side` and `settle_type`. When `ORDER_SYMBOL_LIMITS` is configured, every requested symbol must be allowed. |
 | `active_orders_api` | Retrieves active GMO Coin FX orders. Supports optional `symbol`, `prev_id`, and `count` parameters. When `ORDER_CLIENT_ORDER_ID_PREFIX` is configured, only active orders whose `client_order_id` starts with that prefix are returned. |
 | `latest_executions_api` | Retrieves the latest GMO Coin FX executions for a required `symbol` and optional `count`. When `ORDER_CLIENT_ORDER_ID_PREFIX` is configured, only executions whose `client_order_id` starts with that prefix are returned. |
 | `open_positions_api` | Retrieves all GMO Coin FX open positions. Supports an optional `symbol` parameter. When `ORDER_CLIENT_ORDER_ID_PREFIX` is configured, latest executions are used to return only positions whose opening `client_order_id` starts with that prefix. |
