@@ -7,6 +7,8 @@ from gmo_fx.api.order import OrderApi
 from resources.asset_balance import register_asset_balance_resources
 from tools.active_orders import register_active_orders_tools
 from tools.change_order import register_change_order_tools
+from tools.change_ifdoco_order import register_change_ifdoco_order_tools
+from tools.change_oco_order import register_change_oco_order_tools
 from tools.change_ifd_order import register_change_ifd_order_tools
 from tools.cancel_orders import register_cancel_orders_tools
 from tools.close_order import register_close_order_tools
@@ -119,6 +121,16 @@ def create_mcp() -> FastMCP:
         size_limit=_optional_int_env("ORDER_SIZE_LIMIT"),
         symbol_limits=_symbol_limits_from_env(),
         client_order_id_prefix=os.environ.get("ORDER_CLIENT_ORDER_ID_PREFIX") or None,
+    )
+    register_change_ifdoco_order_tools(
+        mcp,
+        api_key=os.environ["GMO_API_KEY"],
+        secret_key=os.environ["GMO_SECRET_KEY"],
+    )
+    register_change_oco_order_tools(
+        mcp,
+        api_key=os.environ["GMO_API_KEY"],
+        secret_key=os.environ["GMO_SECRET_KEY"],
     )
     return mcp
 
