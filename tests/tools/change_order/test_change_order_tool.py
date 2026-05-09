@@ -182,13 +182,11 @@ class TestChangeOrderTool:
                 raise_on_error=False,
             )
 
-        assert FakeChangeOrderApi.init_calls == [
-            {"api_key": "test-key", "secret_key": "test-secret"}
-        ]
         assert result.is_error is True
         assert result.content[0].text == (
             "Specify exactly one of order_id or client_order_id"
         )
+        assert FakeChangeOrderApi.init_calls == []
         assert FakeChangeOrderApi.api_calls == []
 
     @pytest.mark.anyio
@@ -212,4 +210,26 @@ class TestChangeOrderTool:
         assert result.content[0].text == (
             "Specify exactly one of order_id or client_order_id"
         )
+        assert FakeChangeOrderApi.init_calls == []
+        assert FakeChangeOrderApi.api_calls == []
+
+    @pytest.mark.anyio
+    async def test_should_fail_change_order_when_client_order_id_is_empty(
+        self, monkeypatch: pytest.MonkeyPatch, mcp: FastMCP
+    ):
+        monkeypatch.setattr(change_order_tool, "ChangeOrderApi", FakeChangeOrderApi)
+
+        async with Client(mcp) as client:
+            result = await client.call_tool(
+                "change_order_api",
+                {
+                    "client_order_id": "",
+                    "price": 150.25,
+                },
+                raise_on_error=False,
+            )
+
+        assert result.is_error is True
+        assert result.content[0].text == "client_order_id must not be empty"
+        assert FakeChangeOrderApi.init_calls == []
         assert FakeChangeOrderApi.api_calls == []

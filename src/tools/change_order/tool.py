@@ -23,6 +23,17 @@ def _map_change_order(order) -> dict[str, str | int | float | None]:
     }
 
 
+def _validate_change_order_target(
+    order_id: int | None,
+    client_order_id: str | None,
+) -> None:
+    if (order_id is None) == (client_order_id is None):
+        raise ToolError("Specify exactly one of order_id or client_order_id")
+
+    if client_order_id == "":
+        raise ToolError("client_order_id must not be empty")
+
+
 def register_change_order_tools(
     mcp: FastMCP,
     api_key: str,
@@ -34,12 +45,13 @@ def register_change_order_tools(
         order_id: Optional[int] = None,
         client_order_id: Optional[str] = None,
     ) -> list[dict[str, str | int | float | None]]:
-        """GMO Coin FXの通常注文を変更します。"""
+        """GMO Coin FXの通常注文価格を変更します。"""
+        _validate_change_order_target(
+            order_id=order_id,
+            client_order_id=client_order_id,
+        )
+
         api = ChangeOrderApi(api_key=api_key, secret_key=secret_key)
-
-        if (order_id is None) == (client_order_id is None):
-            raise ToolError("Specify exactly one of order_id or client_order_id")
-
         response = api(
             price=price,
             order_id=order_id,
