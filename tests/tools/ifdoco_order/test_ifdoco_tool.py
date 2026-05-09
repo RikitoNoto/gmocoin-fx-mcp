@@ -6,7 +6,11 @@ import pytest
 from fastmcp import Client, FastMCP
 from gmo_fx.api.ifo_order import IFDOCOOrderApi
 
+from tools.change_ifdoco_order import register_change_ifdoco_order_tools
+from tools.change_oco_order import register_change_oco_order_tools
 from tools.ifdoco_order import register_ifdoco_order_tools
+import tools.change_ifdoco_order.tool as change_ifdoco_tool
+import tools.change_oco_order.tool as change_oco_tool
 import tools.ifdoco_order.tool as ifdoco_tool
 import utils.client_order_id as client_order_id_tool
 
@@ -41,6 +45,16 @@ def create_test_server(
         size_limit=size_limit,
         symbol_limits=symbol_limits,
         client_order_id_prefix=client_order_id_prefix,
+    )
+    register_change_ifdoco_order_tools(
+        mcp,
+        api_key="test-key",
+        secret_key="test-secret",
+    )
+    register_change_oco_order_tools(
+        mcp,
+        api_key="test-key",
+        secret_key="test-secret",
     )
     return mcp
 
@@ -460,7 +474,7 @@ async def test_ifdoco_order_api_applies_symbol_limits(monkeypatch):
 @pytest.mark.anyio
 async def test_change_ifdoco_order_api_uses_root_order_id_and_maps_response(monkeypatch):
     reset_fake_change_ifo_api()
-    monkeypatch.setattr(ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
+    monkeypatch.setattr(change_ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
     mcp = create_test_server()
 
     async with Client(mcp) as client:
@@ -538,7 +552,7 @@ async def test_change_ifdoco_order_api_uses_root_order_id_and_maps_response(monk
 @pytest.mark.anyio
 async def test_change_ifdoco_order_api_uses_client_order_id_and_partial_price(monkeypatch):
     reset_fake_change_ifo_api()
-    monkeypatch.setattr(ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
+    monkeypatch.setattr(change_ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
     mcp = create_test_server()
 
     async with Client(mcp) as client:
@@ -564,7 +578,7 @@ async def test_change_ifdoco_order_api_uses_client_order_id_and_partial_price(mo
 @pytest.mark.anyio
 async def test_change_ifdoco_order_api_validates_required_order_identifier(monkeypatch):
     reset_fake_change_ifo_api()
-    monkeypatch.setattr(ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
+    monkeypatch.setattr(change_ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
     mcp = create_test_server()
 
     async with Client(mcp) as client:
@@ -584,7 +598,7 @@ async def test_change_ifdoco_order_api_validates_required_order_identifier(monke
 @pytest.mark.anyio
 async def test_change_ifdoco_order_api_rejects_both_order_identifiers(monkeypatch):
     reset_fake_change_ifo_api()
-    monkeypatch.setattr(ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
+    monkeypatch.setattr(change_ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
     mcp = create_test_server()
 
     async with Client(mcp) as client:
@@ -608,7 +622,7 @@ async def test_change_ifdoco_order_api_rejects_both_order_identifiers(monkeypatc
 @pytest.mark.anyio
 async def test_change_ifdoco_order_api_validates_required_price(monkeypatch):
     reset_fake_change_ifo_api()
-    monkeypatch.setattr(ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
+    monkeypatch.setattr(change_ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
     mcp = create_test_server()
 
     async with Client(mcp) as client:
@@ -629,7 +643,7 @@ async def test_change_ifdoco_order_api_validates_required_price(monkeypatch):
 @pytest.mark.anyio
 async def test_change_ifdoco_order_api_validates_positive_price(monkeypatch):
     reset_fake_change_ifo_api()
-    monkeypatch.setattr(ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
+    monkeypatch.setattr(change_ifdoco_tool, "ChangeIfoOrderApi", FakeChangeIfoOrderApi)
     mcp = create_test_server()
 
     async with Client(mcp) as client:
@@ -660,7 +674,7 @@ async def test_change_oco_order_api_uses_registered_credentials_and_maps_respons
             api_calls.append(kwargs)
             return SimpleNamespace(root_order_id=123456)
 
-    monkeypatch.setattr(ifdoco_tool, "ChangeOcoOrderApi", FakeChangeOcoOrderApi)
+    monkeypatch.setattr(change_oco_tool, "ChangeOcoOrderApi", FakeChangeOcoOrderApi)
     mcp = create_test_server()
 
     async with Client(mcp) as client:
