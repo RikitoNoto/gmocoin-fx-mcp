@@ -1,5 +1,103 @@
 # gmocoin-mcp
 
+## MCP client registration
+
+Register the server with an MCP client by using either `stdio` or HTTP.
+The local checkout example below uses `/path/to/gmocoin-fx-mcp`; replace it with the absolute path to this repository.
+
+### Recommended: Docker image from GHCR
+
+The recommended setup is to run the published Docker image from GitHub Container Registry over `stdio`.
+Add the following entry to your MCP client configuration:
+
+```json
+{
+  "mcpServers": {
+    "gmocoin-fx": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--env",
+        "GMO_API_KEY",
+        "--env",
+        "GMO_SECRET_KEY",
+        "--env",
+        "ORDER_SIZE_LIMIT",
+        "--env",
+        "ORDER_SYMBOL_LIMITS",
+        "--env",
+        "ORDER_CLIENT_ORDER_ID_PREFIX",
+        "ghcr.io/rikitonoto/gmocoin-fx-mcp:latest"
+      ],
+      "env": {
+        "GMO_API_KEY": "your-api-key",
+        "GMO_SECRET_KEY": "your-secret-key",
+        "ORDER_SIZE_LIMIT": "10000",
+        "ORDER_SYMBOL_LIMITS": "USD_JPY,EUR_JPY",
+        "ORDER_CLIENT_ORDER_ID_PREFIX": "mcp"
+      }
+    }
+  }
+}
+```
+
+Only `GMO_API_KEY` and `GMO_SECRET_KEY` are required. Remove optional environment variables when you do not need order-size, symbol, or client-order-id limits.
+The `--env` options pass those values from the MCP client process into the Docker container.
+Do not set `MCP_TRANSPORT` for `stdio`; the server uses `stdio` by default.
+The `-i` option is required because the MCP client communicates with the container over standard input/output.
+
+### Local source checkout
+
+Use this setup when you want to run the server from a local checkout instead of the published image:
+
+```json
+{
+  "mcpServers": {
+    "gmocoin-fx": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/path/to/gmocoin-fx-mcp",
+        "run",
+        "src/main.py"
+      ],
+      "env": {
+        "GMO_API_KEY": "your-api-key",
+        "GMO_SECRET_KEY": "your-secret-key",
+        "ORDER_SIZE_LIMIT": "10000",
+        "ORDER_SYMBOL_LIMITS": "USD_JPY,EUR_JPY",
+        "ORDER_CLIENT_ORDER_ID_PREFIX": "mcp"
+      }
+    }
+  }
+}
+```
+
+### HTTP
+
+Use HTTP when your MCP client supports remote or URL-based servers.
+Start the server:
+
+```bash
+docker run --rm \
+  --env MCP_TRANSPORT=http \
+  --env MCP_HTTP_HOST=0.0.0.0 \
+  --env MCP_HTTP_PORT=8000 \
+  --env MCP_HTTP_PATH=/mcp \
+  --env GMO_API_KEY=your-api-key \
+  --env GMO_SECRET_KEY=your-secret-key \
+  -p 8000:8000 \
+  ghcr.io/rikitonoto/gmocoin-fx-mcp:latest
+```
+
+Then register the server URL in your MCP client:
+
+```text
+http://localhost:8000/mcp
+```
+
 ## Environment variables
 
 | Name | Required | Description |
