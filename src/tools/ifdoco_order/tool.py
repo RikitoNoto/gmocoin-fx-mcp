@@ -2,6 +2,7 @@ from typing import Optional, TypeVar
 
 from fastmcp import FastMCP
 from fastmcp.exceptions import ToolError
+from gmo_fx.api.change_ifo_order import ChangeIfoOrderApi
 from gmo_fx.api.change_oco_order import ChangeOcoOrderApi
 from gmo_fx.api.ifo_order import IFDOCOOrderApi
 from utils.client_order_id import ClientOrderIdGenerator
@@ -37,6 +38,34 @@ def _require_value(value: T | None, name: str) -> T:
 def _validate_positive_number(value: int | float, name: str) -> None:
     if value <= 0:
         raise ToolError(f"{name} must be greater than 0")
+
+
+def _validate_exactly_one_order_id(
+    root_order_id: int | None, client_order_id: str | None
+) -> None:
+    if (root_order_id is None) == (client_order_id is None):
+        raise ToolError("Specify exactly one of root_order_id or client_order_id")
+
+
+def _validate_change_ifdoco_prices(
+    first_price: float | None,
+    second_limit_price: float | None,
+    second_stop_price: float | None,
+) -> None:
+    prices = {
+        "first_price": first_price,
+        "second_limit_price": second_limit_price,
+        "second_stop_price": second_stop_price,
+    }
+    if all(value is None for value in prices.values()):
+        raise ToolError(
+            "Specify at least one of first_price, "
+            "second_limit_price, or second_stop_price"
+        )
+
+    for name, value in prices.items():
+        if value is not None:
+            _validate_positive_number(value, name)
 
 
 def register_ifdoco_order_tools(
@@ -116,6 +145,34 @@ def register_ifdoco_order_tools(
         )
 
         return [_map_ifdoco_order(order) for order in response.ifo_orders]
+
+    @mcp.tool()
+    def change_ifdoco_order_api(
+        root_order_id: Optional[int] = None,
+        client_order_id: Optional[str] = None,
+        first_price: Optional[float] = None,
+        second_limit_price: Optional[float] = None,
+        second_stop_price: Optional[float] = None,
+    ) -> list[dict[str, str | int | float | None]]:
+        """GMO Coin FXのIFDOCO注文を変更します。"""
+        api = ChangeIfoOrderApi(api_key=api_key, secret_key=secret_key)
+
+        _validate_exactly_one_order_id(root_order_id, client_order_id)
+        _validate_change_ifdoco_prices(
+            first_price,
+            second_limit_price,
+            second_stop_price,
+        )
+
+        response = api(
+            root_order_id=root_order_id,
+            client_order_id=client_order_id,
+            first_price=first_price,
+            second_limit_price=second_limit_price,
+            second_stop_price=second_stop_price,
+        )
+
+        return [_map_ifdoco_order(order) for order in response.orders]
 
     @mcp.tool()
     def change_oco_order_api(
