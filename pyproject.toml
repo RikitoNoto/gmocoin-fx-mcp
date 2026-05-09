@@ -1,7 +1,7 @@
 [project]
-name = "gmocoin-mcp"
-version = "0.1.0"
-description = "Add your description here"
+name = "gmocoin-fx-mcp"
+version = "1.0.0"
+description = "GMOコインFXのMCPサーバ"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

@@ -13,7 +13,6 @@ RUN uv sync --frozen
 
 # Copy the rest of the project
 COPY src/ ./src/
-COPY .env ./.env
 
 EXPOSE 8000
 
