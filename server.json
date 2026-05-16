@@ -1,10 +1,10 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.RikitoNoto/gmocoin-fx-mcp",
+  "name": "io.github.rikitonoto/gmocoin-fx-mcp",
   "title": "GMO Coin FX MCP Server",
   "description": "MCP server for GMO Coin FX trading, positions, executions, klines, and account balances.",
   "repository": {
-    "url": "https://github.com/RikitoNoto/gmocoin-fx-mcp",
+    "url": "https://github.com/rikitonoto/gmocoin-fx-mcp",
     "source": "github"
   },
   "version": "1.0.0",

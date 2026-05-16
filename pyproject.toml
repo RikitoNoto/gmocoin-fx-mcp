@@ -11,7 +11,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/RikitoNoto/gmocoin-fx-mcp"
+Repository = "https://github.com/rikitonoto/gmocoin-fx-mcp"
 
 [dependency-groups]
 dev = [

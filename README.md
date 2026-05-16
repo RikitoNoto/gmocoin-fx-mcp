@@ -1,6 +1,6 @@
 # gmocoin-mcp
 
-<!-- mcp-name: io.github.RikitoNoto/gmocoin-fx-mcp -->
+<!-- mcp-name: io.github.rikitonoto/gmocoin-fx-mcp -->
 
 ## MCP client registration
 
