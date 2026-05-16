@@ -5,14 +5,14 @@ User-facing setup instructions stay in the root `README.md`.
 
 ## Registry metadata
 
-The root `server.json` publishes this server as `io.github.rikitonoto/gmocoin-fx-mcp`.
+The root `server.json` publishes this server as `io.github.RikitoNoto/gmocoin-fx-mcp`.
 It points to the versioned GHCR image `ghcr.io/rikitonoto/gmocoin-fx-mcp:1.0.0` and uses `stdio` transport.
 
 ## Authentication setup
 
 GitHub OIDC is the recommended authentication method for publishing from GitHub Actions.
 No dedicated MCP Registry secret is required, but the workflow must grant `id-token: write` so `mcp-publisher login github-oidc` can request a GitHub Actions OIDC token.
-The namespace also needs to match the GitHub repository owner; this server uses the `io.github.rikitonoto/gmocoin-fx-mcp` namespace.
+The namespace also needs to match the GitHub repository owner; this server uses the `io.github.RikitoNoto/gmocoin-fx-mcp` namespace.
 
 ## Release checklist
 
@@ -26,7 +26,7 @@ When it runs, the workflow:
 5. Authenticates to the MCP Registry with GitHub OIDC and publishes the server metadata.
 
 Before publishing a new registry version, keep the Docker image label
-`io.modelcontextprotocol.server.name=io.github.rikitonoto/gmocoin-fx-mcp` in the image so the MCP Registry can verify OCI ownership.
+`io.modelcontextprotocol.server.name=io.github.RikitoNoto/gmocoin-fx-mcp` in the image so the MCP Registry can verify OCI ownership.
 
 For local validation or manual recovery, use the official CLI:
 
