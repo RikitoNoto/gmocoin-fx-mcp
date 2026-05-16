@@ -1,6 +1,7 @@
 FROM python:3.12-slim
 
 ENV TZ=Asia/Tokyo
+LABEL io.modelcontextprotocol.server.name="io.github.rikitonoto/gmocoin-fx-mcp"
 RUN pip install uv
 
 WORKDIR /app
