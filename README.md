@@ -1,5 +1,7 @@
 # gmocoin-mcp
 
+<!-- mcp-name: io.github.RikitoNoto/gmocoin-fx-mcp -->
+
 ## MCP client registration
 
 Register the server with an MCP client by using either `stdio` or HTTP.

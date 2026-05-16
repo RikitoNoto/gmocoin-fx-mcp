@@ -1,0 +1,55 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.RikitoNoto/gmocoin-fx-mcp",
+  "title": "GMO Coin FX MCP Server",
+  "description": "MCP server for GMO Coin FX trading, positions, executions, klines, and account balances.",
+  "repository": {
+    "url": "https://github.com/RikitoNoto/gmocoin-fx-mcp",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/rikitonoto/gmocoin-fx-mcp:1.0.0",
+      "runtimeHint": "docker",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "GMO_API_KEY",
+          "description": "GMO Coin FX API key.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "GMO_SECRET_KEY",
+          "description": "GMO Coin FX secret key.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "ORDER_SIZE_LIMIT",
+          "description": "Optional maximum order size accepted by order-entry tools.",
+          "isRequired": false,
+          "format": "number"
+        },
+        {
+          "name": "ORDER_SYMBOL_LIMITS",
+          "description": "Optional comma-separated list of symbols accepted by order tools.",
+          "isRequired": false,
+          "format": "string"
+        },
+        {
+          "name": "ORDER_CLIENT_ORDER_ID_PREFIX",
+          "description": "Optional ASCII alphanumeric prefix for generated and filtered client order IDs.",
+          "isRequired": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
